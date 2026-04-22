@@ -22,7 +22,7 @@ scopes = [
 ]
 
 try:
-    creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
+    creds = Credentials.from_service_account_file("/etc/secrets/credentials.json", scopes=scopes)
     client = gspread.authorize(creds)
 
     # 🔥 Use SHEET ID
