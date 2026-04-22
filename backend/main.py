@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import gspread
 from google.oauth2.service_account import Credentials
+import os
 
 app = FastAPI()
 
@@ -22,7 +23,18 @@ scopes = [
 ]
 
 try:
-    creds = Credentials.from_service_account_file("/etc/secrets/credentials.json", scopes=scopes)
+    # 🔥 AUTO HANDLE LOCAL + RENDER
+    if os.path.exists("/etc/secrets/credentials.json"):
+        creds = Credentials.from_service_account_file(
+            "/etc/secrets/credentials.json",
+            scopes=scopes
+        )
+    else:
+        creds = Credentials.from_service_account_file(
+            "credentials.json",
+            scopes=scopes
+        )
+
     client = gspread.authorize(creds)
 
     # 🔥 Use SHEET ID
@@ -34,6 +46,8 @@ try:
     courses_sheet = spreadsheet.worksheet("Courses")
     schedule_sheet = spreadsheet.worksheet("Schedule")
     contacts_sheet = spreadsheet.worksheet("Contacts")
+
+    print("✅ Google Sheets Connected Successfully")
 
 except Exception as e:
     print("❌ Google Sheets Connection Error:", e)
